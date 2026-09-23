@@ -1,15 +1,20 @@
 import time
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # allow running this file directly
 
-from pyniryo import *
+from xarm.wrapper import XArmAPI
 import cv2
 # import the opencv library
 import keyboard  # load keyboard package
 from libraries.vision.markers_detection import *
 from libraries.vision.usbCamera import usbCamera
-import libraries.niryo.NiryoSupport as Niryo
+from libraries.poseObject.poseObject import *
 from libraries.vision.enums import *
 
-camera_index = 1
+robot_ip = '192.168.1.193'  # Replace with your robot's IP address
+
+camera_index = 0
 # The pose from where the image processing happens
 
 camera = usbCamera(camera_index, rotate_frame= True)
@@ -28,6 +33,26 @@ def takePhoto():
         print("Unable to draw image markers")
     cv2.waitKey(1)
 
+def moveToPose(robot, pose):
+    code = robot.set_position(*pose.pose(), wait=True)
+    if code != 0:
+        print(f"Move failed, code: {code}, error_code: {robot.error_code}, warn_code: {robot.warn_code}")
+        robot.clean_error()
+        robot.clean_warn()
+        robot.motion_enable(True)
+        robot.set_mode(0)
+        robot.set_state(0)
+
+def moveToJointAngles(robot, joint_angles):
+    code = robot.set_servo_angle(angle=joint_angles.angles(), wait=True)
+    if code != 0:
+        print(f"Move failed, code: {code}, error_code: {robot.error_code}, warn_code: {robot.warn_code}")
+        robot.clean_error()
+        robot.clean_warn()
+        robot.motion_enable(True)
+        robot.set_mode(0)
+        robot.set_state(0)
+
 def main():
     print("Commands: ")
     print(" q --> Quit")
@@ -36,74 +61,44 @@ def main():
     print(" p --> Take Photo")
     print(" s --> Save Image")
 
-    robot = NiryoRobot("10.10.10.10")
-    #robot.reset_calibration()
-    #robot.request_new_calibration()
-    robot.calibrate_auto()
+    robot = XArmAPI(robot_ip)
+    robot.connect()
 
-    robot.set_learning_mode(False)
-
-    #print("Enable TCP")
-
-    robot.enable_tcp(False)
-    #robot.reset_tcp()
+    robot.clean_error()
+    robot.motion_enable(True)
+    robot.set_mode(0)
+    robot.set_state(0)
 
     print("To home pose")
-    robot.move_pose(Niryo.NED.HOME_POSE)
+    moveToJointAngles(robot, home_joint_angles)
+
 
     print("To observation")
-    robot.move_pose(Niryo.NED.OBSERVATION_POSE)
+    moveToPose(robot, observation_pose)
 
     print("Take photo")
     takePhoto()
 
-    print("Disable TCP")
-
-    robot.set_tcp(Niryo.NED.FINGER_GRIPPER_TCP_OFFSET)
-    robot.enable_tcp(True)
-
-    test_pose = PoseObject(
-        x=0.15, y=-0.1, z=0.10,
-        roll=-1.57, pitch=1.5, yaw=-1.57
-    )
-
-    print("To test pose with tcp")
-    robot.move_pose(test_pose)
-
-    print("Disable TCP")
-    robot.enable_tcp(False)
-    robot.reset_tcp()
-
-    print("To test pose without tcp")
-    robot.move_pose(test_pose)
-
     print("To home pose")
-    robot.move_pose(Niryo.NED.HOME_POSE)
-
-    print("To resting pose")
-    robot.move_to_home_pose()
+    moveToJointAngles(robot, home_joint_angles)
 
     print("Ready")
-    robot.set_learning_mode(True)
 
     while True:
         if keyboard.is_pressed("q"):  # returns True if "q" is pressed
-            robot.move_to_home_pose()
-            robot.set_learning_mode(True)
+            moveToPose(robot, home_pose)
             camera.end();
-            robot.close_connection()
+            robot.disconnect()
             time.sleep(0.5)
             break
         if keyboard.is_pressed("o"):  # returns True if "o" is pressed
             print("To observation")
-            robot.set_learning_mode(False)
-            robot.move_pose(Niryo.NED.OBSERVATION_POSE)
+            moveToPose(robot, observation_pose)
             camera.enable_crosshair(True)
             time.sleep(0.5)
         if keyboard.is_pressed("r"):  # returns True if "o" is pressed
             print("To resting pose")
-            robot.move_to_home_pose()
-            robot.set_learning_mode(True)
+            moveToPose(robot, home_pose)
             time.sleep(0.5)
         if keyboard.is_pressed("p"):  # returns True if "o" is pressed
             print("Take photo")
