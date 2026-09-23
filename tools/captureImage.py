@@ -1,10 +1,16 @@
 # import the opencv library
+import os
+import sys
+
+# allow running this script directly by adding the repo root to sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import keyboard  # load keyboard package
 
 from libraries.vision.usbCamera import usbCamera
 from libraries.vision.enums import *
 import easygui
-camera_index = 1
+camera_index = 0
 def main():
 
     print("Commands: ")

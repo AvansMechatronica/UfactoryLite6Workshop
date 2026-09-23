@@ -46,7 +46,6 @@ class ColorHSVPrime:
     RED = [15, 70, 100], [170, 255, 255], True
     GREEN = [40, 70, 100], [85, 255, 255], False
     ANY = [0, 70, 140], [179, 255, 255], False
-    TEST = [100, 35, 140], [24, 255, 255], True
 
 
 # Different object types handle by the API. The value corresponds to the object's number of sides

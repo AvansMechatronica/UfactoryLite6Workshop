@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import numpy as np
+from pyniryo import *
 
-from Ufactory.libraries.vision.image_functions import *
+from libraries.vision.image_functions import *
 
-from Ufactory.libraries.vision.enums import *
-from Ufactory.libraries.vision.math_functions import euclidean_dist_2_pts
-from Ufactory.libraries.vision.math_functions import *
-from Ufactory.libraries.poseObject.poseObject import *
+from libraries.vision.enums import *
+from libraries.vision.math_functions import euclidean_dist_2_pts
 
 class ObjectDetector:
     def __init__(self, obj_type, obj_color, workspace_ratio=1.0, ret_image_bool=False):
@@ -65,7 +64,7 @@ class ObjectDetector:
         :return: status, PoseObject, annotated image if give_image is True else None
         """
         # Init values
-        result_pose = poseObject(x=0, y=0, z=0, roll=0, pitch=0, yaw=0)
+        result_pose = PoseObject(x=0, y=0, z=0, roll=0, pitch=0, yaw=0)
 
         # Extract working area image from markers
         im_work = extract_img_workspace(img, workspace_ratio=self._workspace_ratio)

@@ -12,12 +12,16 @@ def extract_img_markers(img, workspace_ratio=1.0):
     :param workspace_ratio: Ratio between the width and the height of the area represented by the markers
     :return: extracted and warped working area image
     """
+    print("Original Image Shape:", img.shape)
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
     img_thresh = cv2.adaptiveThreshold(gray, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,
-                                       thresholdType=cv2.THRESH_BINARY, blockSize=15, C=25)
+                                       thresholdType=cv2.THRESH_BINARY, blockSize=51, C=10)
 
+    print("Thresholded Image Shape:", img_thresh.shape)
+    cv2.imshow("Thresholded Image", img_thresh)
     list_good_candidates = find_markers_from_img_thresh(img_thresh)
 
     if not list_good_candidates or len(list_good_candidates) > 6:

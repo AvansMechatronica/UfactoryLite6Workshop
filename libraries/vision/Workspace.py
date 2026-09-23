@@ -1,8 +1,8 @@
+from pyniryo import *
 import json
 import math
 import numpy as np
-from Ufactory.libraries.vision.transform_functions import *
-from Ufactory.libraries.poseObject import *
+from libraries.vision.transform_functions import *
 
 from cv2 import *
 
@@ -12,11 +12,11 @@ class Workspace:
 
     def __init__(self):
 
-        self.UpperLeftPose = objectPose(x=-1000.0, y=-1000.0, z=0.1, roll=0, pitch=0, yaw=0) # 1
-        self.UpperRightPose = objectPose(x=1000.0, y=-1000.0, z=0.1, roll=0, pitch=0, yaw=0) # 2
-        self.LowerRightPose = objectPose(x=1000.0, y=500.0, z=0.1, roll=0, pitch=0, yaw=0) # 3
-        self.LowerLeftPose = objectPose(x=-1000.0, y=500.0, z=0.1, roll=0, pitch=0, yaw=0) # 4
-        self.orgin = objectPose(x=0, y=0, z=0, roll=0, pitch=1.57, yaw=0)
+        self.UpperLeftPose = PoseObject(x=-1000.0, y=-1000.0, z=0.1, roll=0, pitch=0, yaw=0) # 1
+        self.UpperRightPose = PoseObject(x=1000.0, y=-1000.0, z=0.1, roll=0, pitch=0, yaw=0) # 2
+        self.LowerRightPose = PoseObject(x=1000.0, y=500.0, z=0.1, roll=0, pitch=0, yaw=0) # 3
+        self.LowerLeftPose = PoseObject(x=-1000.0, y=500.0, z=0.1, roll=0, pitch=0, yaw=0) # 4
+        self.orgin = PoseObject(x=0, y=0, z=0, roll=0, pitch=1.57, yaw=0)
         #self.calculate_parameters();
 
     def calculate_parameters(self):

@@ -1,6 +1,6 @@
 import time
 
-from pyniryo2 import *
+from pyniryo import *
 import cv2
 # import the opencv library
 import keyboard  # load keyboard package
@@ -9,7 +9,7 @@ from libraries.vision.usbCamera import usbCamera
 import libraries.niryo.NiryoSupport as Niryo
 from libraries.vision.enums import *
 
-camera_index = 0
+camera_index = 1
 # The pose from where the image processing happens
 
 camera = usbCamera(camera_index, rotate_frame= True)
@@ -29,39 +29,38 @@ def takePhoto():
     cv2.waitKey(1)
 
 def main():
-
     print("Commands: ")
     print(" q --> Quit")
     print(" o --> Goto to observation-pose")
     print(" r --> Goto resting-pose")
     print(" p --> Take Photo")
     print(" s --> Save Image")
-	
-    robot = NiryoRobot("10.10.10.10")
-    #robot.arm.reset_calibration()
-    #robot.arm.request_new_calibration()
-    robot.arm.calibrate_auto()
 
-    robot.arm.set_learning_mode(False)
+    robot = NiryoRobot("10.10.10.10")
+    #robot.reset_calibration()
+    #robot.request_new_calibration()
+    robot.calibrate_auto()
+
+    robot.set_learning_mode(False)
 
     #print("Enable TCP")
 
-    robot.tool.enable_tcp(False)
-    #robot.tool.reset_tcp()
+    robot.enable_tcp(False)
+    #robot.reset_tcp()
 
     print("To home pose")
-    robot.arm.move_pose(Niryo.NED.HOME_POSE)
+    robot.move_pose(Niryo.NED.HOME_POSE)
 
     print("To observation")
-    robot.arm.move_pose(Niryo.NED.OBSERVATION_POSE)
+    robot.move_pose(Niryo.NED.OBSERVATION_POSE)
 
     print("Take photo")
     takePhoto()
 
     print("Disable TCP")
 
-    robot.tool.set_tcp(Niryo.NED.FINGER_GRIPPER_TCP_OFFSET)
-    robot.tool.enable_tcp(True)
+    robot.set_tcp(Niryo.NED.FINGER_GRIPPER_TCP_OFFSET)
+    robot.enable_tcp(True)
 
     test_pose = PoseObject(
         x=0.15, y=-0.1, z=0.10,
@@ -69,42 +68,42 @@ def main():
     )
 
     print("To test pose with tcp")
-    robot.arm.move_pose(test_pose)
+    robot.move_pose(test_pose)
 
     print("Disable TCP")
-    robot.tool.enable_tcp(False)
-    robot.tool.reset_tcp()
+    robot.enable_tcp(False)
+    robot.reset_tcp()
 
     print("To test pose without tcp")
-    robot.arm.move_pose(test_pose)
+    robot.move_pose(test_pose)
 
     print("To home pose")
-    robot.arm.move_pose(Niryo.NED.HOME_POSE)
+    robot.move_pose(Niryo.NED.HOME_POSE)
 
     print("To resting pose")
-    robot.arm.move_to_home_pose()
+    robot.move_to_home_pose()
 
     print("Ready")
-    robot.arm.set_learning_mode(True)
+    robot.set_learning_mode(True)
 
     while True:
         if keyboard.is_pressed("q"):  # returns True if "q" is pressed
-            robot.arm.move_to_home_pose()
-            robot.arm.set_learning_mode(True)
+            robot.move_to_home_pose()
+            robot.set_learning_mode(True)
             camera.end();
-            robot.end()
+            robot.close_connection()
             time.sleep(0.5)
             break
         if keyboard.is_pressed("o"):  # returns True if "o" is pressed
             print("To observation")
-            robot.arm.set_learning_mode(False)
-            robot.arm.move_pose(Niryo.NED.OBSERVATION_POSE)
+            robot.set_learning_mode(False)
+            robot.move_pose(Niryo.NED.OBSERVATION_POSE)
             camera.enable_crosshair(True)
             time.sleep(0.5)
         if keyboard.is_pressed("r"):  # returns True if "o" is pressed
             print("To resting pose")
-            robot.arm.move_to_home_pose()
-            robot.arm.set_learning_mode(True)
+            robot.move_to_home_pose()
+            robot.set_learning_mode(True)
             time.sleep(0.5)
         if keyboard.is_pressed("p"):  # returns True if "o" is pressed
             print("Take photo")

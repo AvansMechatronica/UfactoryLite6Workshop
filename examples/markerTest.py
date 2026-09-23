@@ -2,27 +2,25 @@ import cv2
 # import the opencv library
 import keyboard  # load keyboard package
 import time
-from DahengAvansLibrary.DahengLibrary import dahengCamera
-from Ufactory.libraries.vision.markers_detection import *
-from Ufactory.libraries.vision.enums import *
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # allow running this file directly
+from libraries.vision.usbCamera import usbCamera
+from libraries.vision.markers_detection import *
+from libraries.vision.enums import *
 
-camera_index = 1
+camera_index = 0
 
 def main():
-    camera = dahengCamera(1, True)
-    camera.setSoftwareTriggerMode()
-    print("Press [q] and then [Enter] to Exit the Program")
-    camera.startStraem()
+    camera = usbCamera(camera_index, rotate_frame= True)
 
     while True:
         if keyboard.is_pressed("q"):  # returns True if "q" is pressed
-            camera.close();
+            camera.end();
             break
 
         if keyboard.is_pressed("p"):  # returns True if "q" is pressed
-
-            camera.softwareTrigger()
-            image = camera.grab_frame()
+            image = camera.take_photo(display_photo=False);
             result = False
             result, crop_image = extract_img_markers(image, workspace_ratio=1.0)
             if result:

@@ -2,8 +2,8 @@ import math
 import numpy as np
 import cv2
 
-from Ufactory.libraries.vision.enums import *
-from Ufactory.libraries.vision.markers_detection import extract_img_markers, draw_markers
+from libraries.vision.enums import *
+from libraries.vision.markers_detection import extract_img_markers, draw_markers
 
 # Image Processing
 def threshold_hsv(img, list_min_hsv, list_max_hsv, reverse_hue=False, use_s_prime=False):
